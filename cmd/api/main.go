@@ -68,9 +68,7 @@ func main() {
 	}))
 
 	// 2. Public Routes (No Auth Required)
-
-	// Health Check (For UptimeRobot / Render)
-	r.GET("/health", func(c *gin.Context) {
+	r.Match([]string{"GET", "HEAD"}, "/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "up"})
 	})
 

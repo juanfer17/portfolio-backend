@@ -53,11 +53,12 @@ func main() {
 	// --- Router Setup ---
 	r := gin.Default()
 
-	// Configuración CORS para Producción (Vercel) y Desarrollo Local
+	// 1. Global Middleware: CORS
+	// Applied to ALL routes, including health check and public endpoints
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
-			"https://portfolio-frontend-green-tau.vercel.app", // Producción Vercel
-			"http://localhost:3000",                           // Desarrollo Local
+			"https://portfolio-frontend-green-tau.vercel.app", // Production Frontend
+			"http://localhost:3000",                           // Local Development
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With", "X-API-KEY"},
@@ -66,21 +67,20 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// Health Check Endpoint (Para UptimeRobot / Render)
+	// 2. Public Routes (No Auth Required)
+
+	// Health Check (For UptimeRobot / Render)
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "ok",
-			"time":   time.Now().Format(time.RFC3339),
-		})
+		c.JSON(http.StatusOK, gin.H{"status": "up"})
 	})
 
-	// Public Routes (Read-only)
+	// Read-only endpoints for the Portfolio Frontend
 	r.GET("/tech", handler.GetTechnologies)
 	r.GET("/experience", handler.GetExperience)
-	r.POST("/contact", handler.SendContact) // Public contact form
+	r.POST("/contact", handler.SendContact)
 
-	// Protected Routes (Write operations)
-	// Group routes that require authentication
+	// 3. Protected Routes (Require X-API-KEY)
+	// Used only by the Admin/Developer to manage content
 	admin := r.Group("/")
 	admin.Use(middleware.AuthMiddleware())
 	{

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 	"portfolio-backend/internal/database"
 	"portfolio-backend/internal/handlers"
@@ -52,15 +53,26 @@ func main() {
 	// --- Router Setup ---
 	r := gin.Default()
 
-	// Configuración CORS corregida para React
+	// Configuración CORS para Producción (Vercel) y Desarrollo Local
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // Puerto de React
+		AllowOrigins: []string{
+			"https://portfolio-frontend-green-tau.vercel.app", // Producción Vercel
+			"http://localhost:3000",                           // Desarrollo Local
+		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With", "X-API-KEY"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
+
+	// Health Check Endpoint (Para UptimeRobot / Render)
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "ok",
+			"time":   time.Now().Format(time.RFC3339),
+		})
+	})
 
 	// Public Routes (Read-only)
 	r.GET("/tech", handler.GetTechnologies)

@@ -1,0 +1,15 @@
+# Binarios
+/bin/
+main
+main.exe
+
+# Variables de entorno (CRÍTICO)
+.env
+.env.local
+
+# IDEs
+.idea/
+.vscode/
+
+# Dependencias (si usas vendor)
+vendor/

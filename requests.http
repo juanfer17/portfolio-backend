@@ -1,0 +1,121 @@
+### --- CONFIGURACIÓN ---
+# Asegúrate de tener API_KEY=secret123 en tu archivo .env
+# Y reinicia el servidor antes de probar las rutas protegidas.
+
+### --- RUTAS PÚBLICAS (No requieren Auth) ---
+
+### 1. Listar Tecnologías
+GET http://localhost:8080/tech
+Accept: application/json
+
+### 2. Listar Experiencias
+GET http://localhost:8080/experience
+Accept: application/json
+
+### 3. Enviar Mensaje de Contacto
+POST http://localhost:8080/contact
+Content-Type: application/json
+
+{
+  "name": "Reclutador Público",
+  "email": "public@company.com",
+  "message": "Hola, este endpoint debe seguir siendo público."
+}
+
+
+### --- RUTAS PROTEGIDAS (Requieren X-API-KEY) ---
+
+### 4. Crear Tecnología (POST)
+POST http://localhost:8080/tech
+Content-Type: application/json
+X-API-KEY: secret123
+
+{
+  "name": "Docker",
+  "level": "Advanced",
+  "icon": "assets/icons/docker.png"
+}
+
+### 5. Actualizar Tecnología (PUT)
+# Reemplaza <ID_AQUI> con un ID real obtenido del GET
+PUT http://localhost:8080/tech/<ID_AQUI>
+Content-Type: application/json
+X-API-KEY: secret123
+
+{
+  "name": "Docker & Kubernetes",
+  "level": "Expert",
+  "icon": "assets/icons/k8s.png"
+}
+
+### 6. Eliminar Tecnología (DELETE)
+# Reemplaza <ID_AQUI> con un ID real
+DELETE http://localhost:8080/tech/<ID_AQUI>
+X-API-KEY: secret123
+
+
+### --- EXPERIENCIA LABORAL (Con Proyectos) ---
+
+### 7. Crear Experiencia: Flypass (2022 - Presente)
+POST http://localhost:8080/experience
+Content-Type: application/json
+X-API-KEY: juan_secret_123
+
+{
+  "company": "Flypass",
+  "role": "Desarrollador Backend Java",
+  "period": "2022 - Presente",
+  "description": "Liderazgo técnico en servicios backend, arquitectura BFF y eventos.",
+  "projects": [
+    {
+      "name": "CityParking",
+      "description": "APIs REST para gestión de convenios y parqueaderos. Alta disponibilidad.",
+      "tech_stack": ["Java", "DynamoDB", "Amazon SQS"]
+    },
+    {
+      "name": "Motor de Notificaciones",
+      "description": "Fachada unificada para envío de emails y SMS con validaciones.",
+      "tech_stack": ["Spring Boot", "Design Patterns"]
+    },
+    {
+      "name": "Sistema de Combustibles",
+      "description": "Servicios críticos para autorización de pagos con integradores externos.",
+      "tech_stack": ["Java", "Oracle", "Payment Gateways"]
+    }
+  ]
+}
+
+### 8. Crear Experiencia: Cidenet (2020 - 2022)
+POST http://localhost:8080/experience
+Content-Type: application/json
+X-API-KEY: juan_secret_123
+
+{
+  "company": "Cidenet",
+  "role": "Desarrollador Fullstack",
+  "period": "2020 - 2022",
+  "description": "Desarrollo fullstack en industrias de entretenimiento y gestión.",
+  "projects": [
+    {
+      "name": "Cinema Booking",
+      "description": "Sistema de reservas en tiempo real.",
+      "tech_stack": ["Java", "Spring Boot", "Angular", "MySQL"]
+    },
+    {
+      "name": "SODA (Gestión Inmobiliaria)",
+      "description": "Plataforma de gestión documental y de inmuebles.",
+      "tech_stack": ["Python", "Angular", "PostgreSQL"]
+    }
+  ]
+}
+
+### 9. Prueba de Seguridad (Debería fallar 401)
+# Intentamos crear sin la API Key
+POST http://localhost:8080/tech
+Content-Type: application/json
+
+{
+  "name": "Hacker Tech",
+  "level": "Noob",
+  "icon": "hacker.png"
+}
